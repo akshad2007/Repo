@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Cute Little Love Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pink: #3a1029;
+      --lavender: #2a163f;
+      --peach: #47212e;
+      --rose: #ff6fae;
+      --text: #ffd9ee;
+      --soft-white: #fff1f9;
+      --panel: rgba(61, 20, 42, 0.78);
+      --panel-border: rgba(255, 177, 220, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Quicksand', sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 10% 10%, #5a1840 0%, transparent 35%),
+        radial-gradient(circle at 90% 20%, #582257 0%, transparent 38%),
+        linear-gradient(130deg, var(--pink), var(--lavender), var(--peach));
+      overflow-x: hidden;
+    }
+
+    .floating-hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      opacity: 0.3;
+      background: rgba(255, 124, 190, 0.88);
+      transform: rotate(45deg);
+      border-radius: 4px;
+      animation: drift 9s linear infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: inherit;
+    }
+
+    .heart::before { left: -8px; }
+    .heart::after { top: -8px; }
+
+    @keyframes drift {
+      0% { transform: translateY(110vh) rotate(45deg) scale(0.8); opacity: 0; }
+      10% { opacity: 0.35; }
+      100% { transform: translateY(-20vh) rotate(45deg) scale(1.2); opacity: 0; }
+    }
+
+    .app {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(900px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(5px);
+      border-radius: 28px;
+      box-shadow: 0 16px 36px rgba(24, 5, 19, 0.45);
+      padding: 28px;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounceSoft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 12px;
+      font-family: 'Baloo 2', cursive;
+      text-align: center;
+    }
+
+    .scene {
+      display: none;
+      animation: fadeIn .8s ease;
+    }
+
+    .scene.active { display: block; }
+
+    .opening {
+      text-align: center;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      line-height: 1.5;
+      padding: 50px 16px;
+    }
+
+    .calendar-top {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .month-switch {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin: 10px 0 16px;
+      font-weight: 700;
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.2rem;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .day-btn {
+      border: none;
+      border-radius: 14px;
+      height: 46px;
+      background: #5c2540;
+      color: #ffe6f4;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .22s ease, box-shadow .22s ease, background .22s ease;
+      box-shadow: 0 8px 18px rgba(16, 4, 13, 0.35);
+    }
+
+    .day-btn:hover {
+      transform: translateY(-2px);
+      background: #713252;
+    }
+
+    .day-btn.correct { animation: sparkle .8s ease; box-shadow: 0 0 0 2px #ff7fba, 0 0 18px #ff7fba; }
+    .day-btn.glow { box-shadow: 0 0 0 2px #ffa8d1, 0 0 24px #ff65ad; }
+
+    @keyframes sparkle {
+      0%,100% { filter: brightness(1); transform: scale(1); }
+      50% { filter: brightness(1.15); transform: scale(1.05); }
+    }
+
+    .shake { animation: shake .35s linear; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    .feedback {
+      min-height: 52px;
+      margin: 14px 0 4px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .timeline {
+      margin-top: 16px;
+      position: relative;
+      min-height: 190px;
+      border-radius: 90px;
+      border: 2px dashed rgba(255, 124, 190, 0.62);
+      background: rgba(82, 27, 57, 0.76);
+      overflow: hidden;
+      padding: 14px;
+    }
+
+    .timeline-title { text-align: center; font-weight: 700; margin-bottom: 8px; }
+
+    .memory {
+      position: absolute;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #6e2f53;
+      box-shadow: 0 10px 20px rgba(16, 4, 13, 0.35);
+      font-size: .9rem;
+      max-width: 220px;
+      animation: bounceSoft 2.1s ease-in-out infinite;
+    }
+
+    .memory.dec13 { top: 48px; left: 18%; }
+    .memory.dec18 { top: 96px; right: 16%; }
+
+    .connector {
+      position: absolute;
+      left: 41%;
+      right: 32%;
+      top: 106px;
+      border-bottom: 2px dotted #ff7dbc;
+    }
+
+    .final-scene {
+      min-height: 72vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+      background: radial-gradient(circle at 30% 20%, #5a1f43, #4a1738 45%, #31132f 100%);
+      border-radius: 24px;
+    }
+
+    .final-scene h2 { font-size: clamp(1.5rem, 3vw, 2.3rem); line-height: 1.4; }
+
+    .choice-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .cute-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 22px;
+      background: linear-gradient(120deg, #ffb7d7, #ffc9b4);
+      color: #4e1434;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(27, 4, 19, 0.45);
+      transition: transform .2s ease;
+    }
+
+    .cute-btn:hover { transform: translateY(-2px) scale(1.03); }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 7, 18, 0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      padding: 20px;
+    }
+
+    .modal.active { display: flex; animation: fadeIn .35s ease; }
+
+    .modal-card {
+      width: min(700px, 100%);
+      background: #4f1d39;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 20px 32px rgba(13, 3, 9, 0.55);
+      text-align: center;
+    }
+
+    .modal-card p {
+      color: #ffe4f3;
+      line-height: 1.65;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .gallery-note {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: 700;
+      color: #ffc3e3;
+    }
+
+    figure {
+      margin: 0;
+      background: #5a2444;
+      padding: 10px;
+      border-radius: 16px;
+      box-shadow: 0 10px 18px rgba(11, 3, 8, 0.4);
+      animation: fadeIn .8s ease;
+      position: relative;
+      cursor: pointer;
+      transition: transform .24s ease, box-shadow .24s ease;
+    }
+
+    figure:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 24px rgba(11, 3, 8, 0.5);
+    }
+
+    figure img {
+      width: 100%;
+      border-radius: 10px;
+      display: block;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+    }
+
+    figcaption {
+      font-size: .9rem;
+      text-align: center;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    .story-overlay {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 44px;
+      background: rgba(36, 10, 27, 0.88);
+      border: 1px solid rgba(255, 170, 216, 0.35);
+      border-radius: 12px;
+      color: #ffdff1;
+      padding: 10px;
+      font-size: .8rem;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .25s ease, transform .25s ease;
+      pointer-events: none;
+    }
+
+    .story-enabled figure:hover .story-overlay,
+    .story-enabled figure:focus-within .story-overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      opacity: 0;
+      animation: pop 1s ease forwards;
+    }
+
+    @keyframes pop {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-90px) scale(0.3); }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-hearts" id="floatingHearts"></div>
+
+  <main class="app">
+    <div class="card">
+      <section id="scene-opening" class="scene active">
+        <div class="opening">Hi you.<br/>Let’s see if you remember our special days.</div>
+      </section>
+
+      <section id="scene-calendar" class="scene">
+        <h2 class="calendar-top">Tap the dates that made my heart skip.</h2>
+        <div class="month-switch"><span id="monthLabel">December</span></div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="feedback" id="feedback"></div>
+
+        <div class="timeline" id="timeline">
+          <div class="timeline-title">Our heart-shaped timeline ✨</div>
+        </div>
+      </section>
+
+      <section id="scene-final" class="scene">
+        <div class="final-scene" id="finalScene">
+          <h2>From December 13<br/>To December 18<br/>To every smile since then<br/><br/>Will you be my Valentine again, Angelin?</h2>
+          <div class="choice-buttons">
+            <button class="cute-btn answer-btn">Yes</button>
+            <button class="cute-btn answer-btn">Always</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-gallery" class="scene">
+        <h2>Our Sweet Little Gallery</h2>
+        <p class="gallery-note" id="galleryNote">Tap every photo once to unlock the hidden love stories ✨</p>
+        <div class="gallery-grid" id="galleryGrid">
+          <figure class="memory-photo" tabindex="0" data-story="This was the day I realized your smile could calm every storm in me.">
+            <img alt="pastel memory 1" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23ffd5e8'/%3E%3Cstop offset='1' stop-color='%23ffe7c8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='500' height='500' fill='url(%23g1)'/%3E%3Ctext x='250' y='270' text-anchor='middle' font-size='72' fill='%23fff'%3E♡%3C/text%3E%3C/svg%3E" />
+            <figcaption>The smile that makes my day better.</figcaption>
+            <div class="story-overlay">This was the day I realized your smile could calm every storm in me.</div>
+          </figure>
+          <figure class="memory-photo" tabindex="0" data-story="We laughed so much here that I forgot time, and I secretly wished that moment would never end.">
+            <img alt="pastel memory 2" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop stop-color='%23e5dbff'/%3E%3Cstop offset='1' stop-color='%23ffd4e6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='500' height='500' fill='url(%23g2)'/%3E%3Ctext x='250' y='270' text-anchor='middle' font-size='72' fill='%23fff'%3E♡%3C/text%3E%3C/svg%3E" />
+            <figcaption>Our favorite moment.</figcaption>
+            <div class="story-overlay">We laughed so much here that I forgot time, and I secretly wished that moment would never end.</div>
+          </figure>
+          <figure class="memory-photo" tabindex="0" data-story="You looked at me like home in this photo, and I knew how lucky love can feel.">
+            <img alt="pastel memory 3" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g3' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23ffd9c4'/%3E%3Cstop offset='1' stop-color='%23ffc4e6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='500' height='500' fill='url(%23g3)'/%3E%3Ctext x='250' y='270' text-anchor='middle' font-size='72' fill='%23fff'%3E♡%3C/text%3E%3C/svg%3E" />
+            <figcaption>Proof that I am the luckiest person.</figcaption>
+            <div class="story-overlay">You looked at me like home in this photo, and I knew how lucky love can feel.</div>
+          </figure>
+          <figure class="memory-photo" tabindex="0" data-story="This is the memory that reminds me our forever is already quietly beginning.">
+            <img alt="pastel memory 4" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cdefs%3E%3ClinearGradient id='g4' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop stop-color='%23ffd0dd'/%3E%3Cstop offset='1' stop-color='%23e6d8ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='500' height='500' fill='url(%23g4)'/%3E%3Ctext x='250' y='270' text-anchor='middle' font-size='72' fill='%23fff'%3E♡%3C/text%3E%3C/svg%3E" />
+            <figcaption>Forever starts here.</figcaption>
+            <div class="story-overlay">This is the memory that reminds me our forever is already quietly beginning.</div>
+          </figure>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="modal" id="messageModal">
+    <div class="modal-card">
+      <p>
+        I don’t know what I did to deserve you, but I’m grateful every single day.<br>
+        From the moment you came into my life, everything felt lighter, warmer, and happier.<br>
+        You are my favorite person, my safe place, and my best memory.<br>
+        Every laugh, every conversation, every small moment with you means more than you know.<br>
+        I don’t just want today with you.<br>
+        I want all the ordinary days, the silly days, the quiet days, and the unforgettable days.<br>
+        Thank you for choosing me.<br>
+        I will always choose you.
+      </p>
+      <button class="cute-btn" id="doneBtn">Done</button>
+    </div>
+  </div>
+
+  <script>
+    const scenes = {
+      opening: document.getElementById('scene-opening'),
+      calendar: document.getElementById('scene-calendar'),
+      final: document.getElementById('scene-final'),
+      gallery: document.getElementById('scene-gallery')
+    };
+
+    const monthLabel = document.getElementById('monthLabel');
+    const calendarGrid = document.getElementById('calendarGrid');
+    const feedback = document.getElementById('feedback');
+    const timeline = document.getElementById('timeline');
+    const modal = document.getElementById('messageModal');
+    const doneBtn = document.getElementById('doneBtn');
+    const galleryGrid = document.getElementById('galleryGrid');
+    const galleryNote = document.getElementById('galleryNote');
+    const galleryPhotos = Array.from(document.querySelectorAll('.memory-photo'));
+
+    const state = {
+      month: 'December',
+      correct: new Set(),
+      openedPhotos: new Set(),
+      storyUnlocked: false
+    };
+
+    const daysByMonth = {
+      December: 31,
+      February: 29
+    };
+
+    function showScene(key) {
+      Object.values(scenes).forEach(scene => scene.classList.remove('active'));
+      scenes[key].classList.add('active');
+    }
+
+    function spawnHearts() {
+      const holder = document.getElementById('floatingHearts');
+      for (let i = 0; i < 26; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'heart';
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.animationDelay = `${Math.random() * 8}s`;
+        heart.style.animationDuration = `${8 + Math.random() * 7}s`;
+        heart.style.opacity = (0.18 + Math.random() * 0.2).toFixed(2);
+        heart.style.transform = `scale(${0.6 + Math.random() * 0.8}) rotate(45deg)`;
+        holder.appendChild(heart);
+      }
+    }
+
+    function renderCalendar() {
+      monthLabel.textContent = state.month;
+      calendarGrid.innerHTML = '';
+      const days = daysByMonth[state.month];
+
+      for (let day = 1; day <= days; day++) {
+        const btn = document.createElement('button');
+        btn.className = 'day-btn';
+        btn.textContent = day;
+        btn.addEventListener('click', () => onDayClick(day, btn));
+        calendarGrid.appendChild(btn);
+      }
+    }
+
+    function wrongDate(btn) {
+      btn.classList.add('shake');
+      feedback.textContent = 'Not this one. Try again.';
+      setTimeout(() => btn.classList.remove('shake'), 400);
+    }
+
+    function addMemory(type) {
+      if (type === 'dec13' && !document.querySelector('.memory.dec13')) {
+        const memory = document.createElement('div');
+        memory.className = 'memory dec13';
+        memory.textContent = 'Dec 13 💗 The day you said yes.';
+        timeline.appendChild(memory);
+      }
+
+      if (type === 'dec18' && !document.querySelector('.memory.dec18')) {
+        const memory = document.createElement('div');
+        memory.className = 'memory dec18';
+        memory.textContent = 'Dec 18 💞 Our first kiss.';
+        timeline.appendChild(memory);
+
+        const connector = document.createElement('div');
+        connector.className = 'connector';
+        timeline.appendChild(connector);
+      }
+    }
+
+    function heartConfetti(origin) {
+      for (let i = 0; i < 24; i++) {
+        const bit = document.createElement('span');
+        bit.className = 'confetti';
+        bit.style.left = `${origin.x + (Math.random() * 100 - 50)}px`;
+        bit.style.top = `${origin.y + (Math.random() * 10 - 5)}px`;
+        bit.style.background = ['#ff9fc9', '#ffc8dd', '#ffc7a5', '#e7ccff'][i % 4];
+        document.body.appendChild(bit);
+        setTimeout(() => bit.remove(), 1100);
+      }
+    }
+
+    function onDayClick(day, btn) {
+      if (state.month === 'December') {
+        if (day === 13) {
+          btn.classList.add('correct');
+          feedback.textContent = 'The day you said yes to me. Best decision of my life.';
+          state.correct.add('dec13');
+          addMemory('dec13');
+        } else if (day === 18) {
+          btn.classList.add('correct', 'glow');
+          feedback.textContent = 'Our first kiss. Time paused for a moment.';
+          state.correct.add('dec18');
+          addMemory('dec18');
+        } else {
+          wrongDate(btn);
+        }
+
+        if (state.correct.has('dec13') && state.correct.has('dec18')) {
+          feedback.textContent = 'Two special memories unlocked. One more to go.';
+          setTimeout(() => {
+            state.month = 'February';
+            renderCalendar();
+            feedback.textContent = 'Now tap the final date 💘';
+          }, 1300);
+        }
+      } else if (state.month === 'February') {
+        if (day === 14) {
+          btn.classList.add('correct', 'glow');
+          const rect = btn.getBoundingClientRect();
+          heartConfetti({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+          setTimeout(() => showScene('final'), 1100);
+        } else {
+          wrongDate(btn);
+        }
+      }
+    }
+
+
+    function setupGalleryStories() {
+      galleryPhotos.forEach((photo, index) => {
+        photo.addEventListener('click', () => {
+          state.openedPhotos.add(index);
+          if (!state.storyUnlocked && state.openedPhotos.size === galleryPhotos.length) {
+            state.storyUnlocked = true;
+            galleryGrid.classList.add('story-enabled');
+            galleryNote.textContent = 'All stories unlocked! Hover a photo to read the memory behind it 💖';
+          }
+        });
+      });
+    }
+
+    document.querySelectorAll('.answer-btn').forEach(btn => {
+      btn.addEventListener('click', () => modal.classList.add('active'));
+    });
+
+    doneBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+      showScene('gallery');
+    });
+
+    setupGalleryStories();
+
+    spawnHearts();
+    setTimeout(() => {
+      showScene('calendar');
+      renderCalendar();
+    }, 2200);
+  </script>
+</body>
+</html>
